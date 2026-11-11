@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Keerthy Mini App</title>
+    <!-- Telegram Web App Script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Icons ke liye FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- Global Styles --- */
+        :root {
+            --primary-purple: #6c2bd9;
+            --bg-color: #f3f4f9;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding-bottom: 90px; /* Bottom nav ke liye jagah */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Top Header --- */
+        .top-header {
+            background-color: var(--primary-purple);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .top-header .right-icons i {
+            margin-left: 15px;
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            background: linear-gradient(135deg, #8b5cf6, #6c2bd9);
+            padding: 20px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            color: white;
+            padding-bottom: 35px;
+        }
+
+        .profile-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #a78bfa;
+            object-fit: cover;
+        }
+
+        .premium-btn {
+            background: linear-gradient(to right, #fcd34d, #f59e0b);
+            color: #000;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+            cursor: pointer;
+        }
+
+        .hero-section h2 {
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .hero-section h1 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .hero-section h1 span {
+            color: #fcd34d;
+        }
+
+        .hero-section p {
+            font-size: 14px;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        /* --- Filters --- */
+        .filters-container {
+            padding: 20px 0 10px 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            padding-right: 20px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .filter-row::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        .chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: white;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .chip.active {
+            background: var(--primary-purple);
+            color: white;
+        }
+
+        /* --- Content Section --- */
+        .content-section {
+            padding: 10px 20px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .section-title i {
+            color: var(--primary-purple);
+            margin-right: 8px;
+        }
+
+        .new-badge {
+            color: #10b981;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .new-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        /* --- Movie Card --- */
+        .movie-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .movie-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-content {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .season-box {
+            background: #84cc16;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            width: 70px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+        }
+
+        .details-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .tag.orange { background: #fef3c7; color: #d97706; }
+        .tag.purple { background: #ede9fe; color: #6d28d9; }
+
+        .episodes-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+            align-self: flex-end;
+            margin-top: auto;
+            cursor: pointer;
+        }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            border-radius: 30px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #9ca3af;
+            font-size: 10px;
+            font-weight: 600;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item.active {
+            color: white;
+            background: var(--primary-purple);
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-top: -20px; /* Thoda upar uthane ke liye */
+            box-shadow: 0 5px 15px rgba(108, 43, 217, 0.4);
+        }
+
+        .nav-item.active i { font-size: 22px; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <i class="fa-solid fa-xmark"></i>
+        <span>Keerthy</span>
+        <div class="right-icons">
+            <i class="fa-solid fa-chevron-down"></i>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="profile-row">
+            <!-- Dummy Image -->
+            <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="profile-pic">
+            <button class="premium-btn">Go Premium</button>
+        </div>
+        <h2>Hello, Anil Kumar</h2>
+        <h1>Fresh <span>drops</span></h1>
+        <p>New movies and web series added in the last 24 hours.</p>
+    </section>
+
+    <!-- Filters -->
+    <div class="filters-container">
+        <div class="filter-row">
+            <div class="chip active">All</div>
+            <div class="chip">Movies</div>
+            <div class="chip">Web series</div>
+        </div>
+        <div class="filter-row">
+            <div class="chip active">All languages</div>
+            <div class="chip">Hindi (104)</div>
+            <div class="chip">English</div>
+            <div class="chip">Tamil</div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <section class="content-section">
+        <div class="section-title">
+            <div><i class="fa-solid fa-ellipsis-vertical"></i> Added in the last 24 hours</div>
+            <div class="new-badge">NEW</div>
+        </div>
+
+        <!-- Card -->
+        <div class="movie-card">
+            <div class="movie-title">Love in Disguise</div>
+            <div class="card-content">
+                <div class="season-box">S01</div>
+                <div class="details-col">
+                    <span class="tag orange">Season 1</span>
+                    <span class="tag purple">6 files</span>
+                    <span class="tag purple">1080p</span>
+                    <span class="tag purple">720p</span>
+                </div>
+                <button class="episodes-btn">Episodes</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active">
+            <i class="fa-regular fa-clock"></i>
+            <span>Recent</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <span>Trending</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History</span>
+        </div>
+        <div class="nav-item">
+            <i class="fa-solid fa-crown"></i>
+            <span>Premium</span>
+        </div>
+    </nav>
+
+    <script>
+        // Telegram Mini App ko full screen karne ke liye
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // App ko screen par faila dega
+    </script>
+</body>
+</html>
